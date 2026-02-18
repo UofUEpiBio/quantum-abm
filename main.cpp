@@ -12,7 +12,7 @@ int main() {
     double contact_rate = R0 * prob_recovery / prob_infection;
 
     // Initializing the model
-    ABM model(1000, 10, prob_infection, prob_recovery, contact_rate, 0.5, 100);
+    ABM model(100, 5, prob_infection, prob_recovery, contact_rate, 0.5, 100);
 
     // Getting a glimpse of the initial state of the model
     model.print();

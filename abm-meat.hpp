@@ -26,7 +26,7 @@ inline double Group::get_n_infected() const {
 inline double Group::sample_infected() const {
 
     double n_infected = get_n_infected();
-    double n_agents = agents.size();
+    double n_groups   = abm->get_n_groups();
 
     if (n_infected == 0) {
         return 0.0;
@@ -38,10 +38,9 @@ inline double Group::sample_infected() const {
         abm->get_contact_rate_reduction()
     );
 
-    double p_infection = crate *
-        (n_infected / n_agents);
+    double p_infection = crate / n_infected / n_groups ;
     return abm->rbinom(
-        static_cast<double>(agents.size()),
+        static_cast<double>(n_infected),
         p_infection
     );
 
@@ -79,6 +78,10 @@ inline void ABM::m_update_susceptible(Agent& agent) {
             " (n_contacts_infected = " + std::to_string(n_contacts_infected) + ")"
         );
         agent.set_state(State::INFECTED);
+    } else
+    {
+        // Ensuring the agent remains susceptible if they don't get infected
+        agent.set_state(State::SUSCEPTIBLE);
     }
 }
 
@@ -90,6 +93,9 @@ inline void ABM::m_update_infected(Agent& agent) {
             " (p_recovery = " + std::to_string(prob_recovery) + ")"
         );
         agent.set_state(State::RECOVERED);
+    } else {
+        // Ensuring the agent remains infected if they don't recover
+        agent.set_state(State::INFECTED);
     }
 }
 
