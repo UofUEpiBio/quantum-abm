@@ -70,6 +70,8 @@ private:
     void m_log(std::string msg);
     Matrix epidemic_curve;
 
+    double m_calc_utility();
+
 public:
     ABM(
         size_t n_agents = 1000,
@@ -93,6 +95,10 @@ public:
 
     double get_contact_rate() const;
     double get_contact_rate_reduction() const;
+
+    size_t get_n_agents() const;
+    size_t get_n_groups() const;
+    std::vector< double > get_n_infected_per_group() const;
 
 };
 

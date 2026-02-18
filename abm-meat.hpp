@@ -154,8 +154,15 @@ inline void ABM::m_log(std::string msg) {
 
         // Formatting the log number
         std::string log_number = std::to_string(log_step++);
+        std::string util_number = std::to_string(m_calc_utility());
+
         log_number = std::string(4 - log_number.size(), '0') + log_number;
-        std::cout << "[log " << log_number << "] " << msg << std::endl;
+        
+        // Ensuring we only print two decimal places for the utility
+        util_number = util_number.substr(0, util_number.find(".") + 3);
+
+        std::cout << "[log " << 
+        log_number << "; utility = " << util_number << "] " << msg << std::endl;
     }
 }
 
@@ -240,6 +247,38 @@ inline double ABM::get_contact_rate() const {
 
 inline double ABM::get_contact_rate_reduction() const {
     return contact_rate_reduction;
+};
+
+inline double ABM::m_calc_utility() {
+
+    // Placeholder for utility calculation
+    auto infected_per_group = get_n_infected_per_group();
+
+    // Assuming exponential utility function
+    double ans = 0.0;
+    for (const auto& n_infected: infected_per_group)
+    {
+        // Example exponential decay utility
+        ans += std::exp(-n_infected / 100.0); 
+    }
+
+    return ans;
+};
+
+inline size_t ABM::get_n_agents() const {
+    return agents.size();
+};
+
+inline size_t ABM::get_n_groups() const {
+    return groups.size();
+};
+
+inline std::vector< double > ABM::get_n_infected_per_group() const {
+    std::vector< double > n_infected_per_group;
+    for (const auto& group: groups) {
+        n_infected_per_group.push_back(group.get_n_infected());
+    }
+    return n_infected_per_group;
 };
 
 #endif

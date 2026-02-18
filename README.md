@@ -36,3 +36,20 @@ K(g,l) \sim \text{Binomial}\left(I_l, \frac{c(1 - \delta)^{a_g}}{\sum_{g'}|G_g|(
 Where $n = \sum_gS_g + \sum_gI_g$, and $\delta \in (0,1)$ is the fraction with which the contact rate is reduced when the policy is active. Thus, when $a_g = 0 \forall g$, then the probability parameter from the binomial reduces simply to $c/n$, yielding an average contact rate of $c$.
 
 For this exercise, we will be assuming that the contact rates will not change as a function of how many agents are in the set of infected or susceptible agents. In a more standard model, a decreasing number of available agents would affect the contact rates.
+
+## Running the model
+
+The model is implemented in the [`main.cpp`](./main.cpp) program, with the core class `ABM`. The corresponding [`Makefile`](./Makefile) contains the code for building the program:
+
+```bash
+# This runs
+# g++ -std=c++17 -pedantic -Wall -O2 -g main.cpp -o main.o
+make main.o
+```
+
+To execute the program, you don't need to pass any arguments:
+
+```bash
+./main.o
+```
+
