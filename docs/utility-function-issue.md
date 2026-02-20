@@ -13,9 +13,9 @@ The utility should encode a tradeoff between:
 ## Why this issue matters
 Current utility behavior is placeholder-like and does not explicitly expose the policy optimization structure
 
-\[
+```math
 \max_{\mathbf{a} \in \{0,1\}^{|G|}} U(\mathbf{a}, I)
-\]
+```
 
 where `a` is the intervention vector and `I` is the infection state.
 
@@ -23,24 +23,24 @@ where `a` is the intervention vector and `I` is the infection state.
 For a policy vector `a`, define:
 
 - Effective contact multiplier per group:
-  - `m_g(a_g) = 1` if `a_g = 0`
-  - `m_g(a_g) = (1 - δ)` if `a_g = 1`
+  - $m_g(a_g) = 1$ if $a_g = 0$
+  - $m_g(a_g) = (1 - \delta)$ if $a_g = 1$
 - Average multiplier:
-  - `m̄(a) = (1/|G|) Σ_g m_g(a_g)`
+  - $\bar m(a) = (1/|G|) \sum_g m_g(a_g)$
 - Effective contact rate:
-  - `c_eff(a) = c * m̄(a)`
+  - $c_{eff}(a) = c \times \bar m(a)$
 
 Then utility:
 
-\[
+```math
 U(\mathbf{a}, I) = \omega_E \cdot \bar m(\mathbf{a})
 - \omega_H \cdot \left[p_t \cdot c_{\mathrm{eff}}(\mathbf{a}) \cdot i \cdot (1-i)\right]
-\]
+```
 
 where:
-- `i = I/N` is the infected share,
-- `ω_E` controls preference for activity,
-- `ω_H` controls penalty for transmission risk.
+- $i = I/N$ is the infected share,
+- $\omega_E$ controls preference for activity,
+- $\omega_H$ controls penalty for transmission risk.
 
 This is intentionally lightweight and can be evaluated very fast for many candidate binary vectors.
 
