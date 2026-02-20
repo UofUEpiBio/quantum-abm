@@ -1,6 +1,8 @@
 #include<vector>
 #include<iostream>
 #include<random>
+#include<numeric>
+#include<stdexcept>
 #include "abm-bones.hpp"
 #include "utils.hpp"
 
@@ -34,8 +36,8 @@ inline double Group::sample_infected() const {
 
     // Figure out the contact rate
     double crate = abm->get_contact_rate() * (
-        restricted_contact ? 1.0 : 
-        abm->get_contact_rate_reduction()
+        restricted_contact ?
+        abm->get_contact_rate_reduction() : 1.0
     );
 
     double p_infection = crate / n_infected / n_groups ;
@@ -255,20 +257,53 @@ inline double ABM::get_contact_rate_reduction() const {
     return contact_rate_reduction;
 };
 
-inline double ABM::m_calc_utility() {
 
-    // Placeholder for utility calculation
-    auto infected_per_group = get_n_infected_per_group();
+inline double ABM::evaluate_policy_utility(const std::vector<int>& policy) const {
 
-    // Assuming exponential utility function
-    double ans = 0.0;
-    for (const auto& n_infected: infected_per_group)
-    {
-        // Example exponential decay utility
-        ans += std::exp(-n_infected / 100.0); 
+    if (policy.size() != groups.size()) {
+        throw std::invalid_argument("Policy size must match number of groups.");
     }
 
-    return ans;
+    const double reduction_multiplier = get_contact_rate_reduction();
+
+    double total_contact_multiplier = 0.0;
+    for (const auto& a_g : policy) {
+        if (a_g != 0 && a_g != 1) {
+            throw std::invalid_argument("Policy entries must be binary (0 or 1).");
+        }
+        total_contact_multiplier += (a_g == 1) ? reduction_multiplier : 1.0;
+    }
+
+    const double average_contact_multiplier =
+        total_contact_multiplier / static_cast<double>(policy.size());
+    const double effective_contact_rate = get_contact_rate() * average_contact_multiplier;
+
+    const double total_infected = std::accumulate(
+        groups.begin(), groups.end(), 0.0,
+        [](double acc, const Group& g) { return acc + g.get_n_infected(); }
+    );
+
+    const double infected_share = total_infected / static_cast<double>(get_n_agents());
+
+    // Economic utility increases with contact intensity.
+    const double economic_term = average_contact_multiplier;
+
+    // Health cost proxy: expected new infections in one step under SIS-style mixing.
+    const double transmission_risk =
+        prob_infection * effective_contact_rate * infected_share * (1.0 - infected_share);
+
+    return economic_weight * economic_term - health_weight * transmission_risk;
+};
+
+inline double ABM::m_calc_utility() {
+    std::vector<int> current_policy;
+    current_policy.reserve(groups.size());
+
+    for (const auto& group : groups) {
+        current_policy.push_back(group.restricted_contact ? 1 : 0);
+    }
+
+    return evaluate_policy_utility(current_policy);
 };
 
 inline size_t ABM::get_n_agents() const {

@@ -19,6 +19,8 @@ Where $I = \sum_{g=1}^{|G|} I_g $ is the total number of infected in the system,
 
 Ultimately, this can be thought as a government deciding what communities to quarantine or not. Closing the economy has negative effects to the society, so it is not always an easy decision.
 
+A concrete utility evaluator is available in `ABM::evaluate_policy_utility(const std::vector<int>&)`, using a binary policy vector where `0` means no contact reduction and `1` means reduced contacts. The utility balances an activity reward against a transmission-risk penalty and is intentionally simple so it can be paired with different optimizers later.
+
 ### Implementation
 
 The SIR model is implemented as a discrete-time ABM where the public health authorities decide what communities will go into a policy reducing contact rate. The model is governed by the probability of transmission $p_t$, contact rate $c$, and recovery rate $r$. Susceptible agents may become infected as a function of the number of contacts:

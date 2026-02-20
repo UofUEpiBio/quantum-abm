@@ -61,6 +61,8 @@ private:
     double contact_rate_reduction;
     int n_steps;
     bool verbose = true;
+    double economic_weight = 1.0;
+    double health_weight = 1.0;
 
     void m_update_susceptible(Agent& agent);
     void m_update_infected(Agent& agent);
@@ -99,6 +101,7 @@ public:
     size_t get_n_agents() const;
     size_t get_n_groups() const;
     std::vector< double > get_n_infected_per_group() const;
+    double evaluate_policy_utility(const std::vector<int>& policy) const;
 
 };
 
